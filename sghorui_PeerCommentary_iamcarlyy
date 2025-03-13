@@ -1,0 +1,361 @@
+---
+title: "imcarlyy_OriginalHomeworkCode_03"
+date: "2025-03-01"
+output:
+  prettydoc::html_pretty:
+    theme: tactile
+    highlight: github
+    toc: true
+    toc_depth: 2
+---
+
+#Guys, the theme that this HW was asking us to use didn't work for me at all. I had to use a different one! 
+
+![Zombie gif](https://gifdb.com/images/high/funny-walking-dead-zombie-coffee-oc2nvdhee0tg2s24.webp)
+
+# Some of my best friends are Zombies Homework
+
+#Installing my packages:
+```{r include=FALSE}
+options(repos = c(CRAN = "https://cran.rstudio.com"))
+install.packages("rmdformats")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("curl")
+install.packages("car")
+install.packages("gridExtra") #This one is to be able display multiple ggplot2 boxplots in my same window (instead of seeing one at a time).I was using the patchwork but that was too difficult to work with.
+
+library(tidyverse)
+library(rmdformats)
+```
+
+## Reading my CSV zombie file:
+```{r echo=TRUE}
+require(readr)
+file_path <- "C:/Users/Carly Rojas/OneDrive - Universidad San Francisco de Quito/Documentos/A_MS IN BIOLOGY/SCHMITT_588 Project Design and Statistics/zombies.csv" # manually specify your file path
+survivors <- read_csv(file_path, col_names = TRUE)# for comma-separated files
+```
+
+
+## FIRST EXERCISE
+### 1.1 Calculate the population mean for each quantitative random variable (height, weight, age, number of zombies killed, and years of education)
+```{r echo=TRUE}
+#These are the quantitative random variables I got from my dataset.  
+height_mean <- mean(survivors$height)
+weight_mean <- mean(survivors$weight)
+age_mean <- mean(survivors$age)
+zombies_killed_mean <- mean(survivors$zombies_killed)
+years_of_education_mean <- mean(survivors$years_of_education)
+
+print(paste("Population Mean of Height:", height_mean))
+print(paste("Population Mean of Weight:", weight_mean))
+print(paste("Population Mean of Age:", age_mean))
+print(paste("Population Mean of Zombies Killed:", zombies_killed_mean))
+print(paste("Population Mean of Years of Education:", years_of_education_mean))
+```
+
+### 1.2 Calculate the standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education)
+```{r echo=TRUE}
+height_sd_population <- sqrt(sum((survivors$height - height_mean)^2) / length(survivors$height))
+weight_sd_population <- sqrt(sum((survivors$weight - weight_mean)^2) / length(survivors$weight))
+age_sd_population <- sqrt(sum((survivors$age - age_mean)^2) / length(survivors$age))
+zombies_killed_sd_population <- sqrt(sum((survivors$zombies_killed - zombies_killed_mean)^2) / length(survivors$zombies_killed))
+years_of_education_sd_population <- sqrt(sum((survivors$years_of_education - years_of_education_mean)^2) / length(survivors$years_of_education))
+
+print(paste("Population SD of Height:", height_sd_population))
+print(paste("Population SD of Weight:", weight_sd_population))
+print(paste("Population SD of Age:", age_sd_population))
+print(paste("Population SD of Zombies Killed:", zombies_killed_sd_population))
+print(paste("Population SD of Years of Education:", years_of_education_sd_population))
+
+```
+
+
+##Soumalya's Comments: Great job calculating both means and standard deviations. The code is clear and straightforward, making it easy to follow the statistical computations for each variable.
+
+## SECOND EXERCISE
+### 2.1 Use {ggplot} to make boxplots of each of these variables by gender.
+```{r echo=TRUE}
+library(ggplot2)
+library(gridExtra)
+survivors$gender <- as.factor(survivors$gender)
+
+
+#This is my boxplot for height by gender
+Height_plot <- ggplot(survivors, aes(x= gender, y=height)) + geom_boxplot() + labs(title= "Height by Gender Boxplot",x = "Gender", y= "Height") + theme_light()
+
+#This is my boxplot for weight by gender
+Weight_plot <- ggplot(survivors, aes(x=gender, y=weight)) + geom_boxplot() + labs(title="Weight by Gender Boxplot", x= "Gender", y= "Weight") + theme_light()
+
+#This is my boxplot for age by gender
+Age_plot<- ggplot(survivors, aes(x=gender, y=age)) + geom_boxplot() + labs(title= "Age by Gender Boxplot", x= "Gender", y= "Age") + theme_light()
+
+
+#This is my boxplot for zombies killed by gender
+Zombies_killed_plot <- ggplot(survivors, aes(x=gender, y=zombies_killed)) + geom_boxplot() + labs(title="Zombies Killed Boxplot", x= "Gender", y= "Zombies killed") + theme_light()
+
+#This is my boxplot for Years of Education 
+Years_of_education_plot<- ggplot(survivors, aes(x=gender, y=years_of_education)) + geom_boxplot() + labs(title="Years of Education Boxplot", x= "Gender", y= "Years of Education") + theme_light()
+
+#Here, I tell R that I want a 3x2 grid. Here, unlike with the patchwork package, I don't need to add an empty plot (I started working with that package before but it was too complicated and overwhelming so I switched to this other one). 
+
+#NOTE TO SELF: remember that the grid.arrage function comes from the gridExtra package. 
+grid.arrange(Height_plot, Weight_plot, Age_plot, Zombies_killed_plot, Years_of_education_plot, nrow = 2, ncol = 3, top = "Boxplots of Variables by Gender")
+```
+
+##Soumalya's Comments: Nice use of ggplot and gridExtra to create multiple boxplots. Switching from patchwork to gridExtra seems to have worked well. Also kuddos to the clean and organized visuals for each variable by gender.
+
+## THIRD EXERCISE
+### 3.1 Use {ggplot} to make scatterplots of height and weight in relation to age.
+```{r echo=TRUE}
+height_scatterplot <- ggplot(data= survivors, aes(x= age, y= height, color= factor(gender))) + xlab("Age") + ylab("Height") + geom_point() + theme (legend.position = "bottom", legend.title = element_blank()) 
+
+#This is the same that we did in Challenge 6, Module 6, but with some slight chances that make it easier to work with. 
+#This one took me a long time to figure out and I kept getting error messages because of a typo! 
+
+weight_scatterplot <- ggplot(data= survivors, aes(x= age, y= weight, color= factor(gender))) + xlab("Age") + ylab("Weight") + geom_point() + theme (legend.position = "bottom", legend.title = element_blank()) #This is the same that we did in Challenge 6, Module 6, but with some slight chances that make it easier to work with. 
+
+grid.arrange(height_scatterplot, weight_scatterplot, ncol=2, top= "Scatterplots of height and weight in relation to age") #It was very stasfying to learn about gridExtra because it made visualizing my plots much easier! 
+```
+
+### 3.2 Do these variables seem to be related? In what way?
+#MY ANSWER: In both scatterplots, it is visually evident that the height AND weight increase in relation to age. In spite of this, it is important to note that the height shows a more pronounced correlation with age compared to weight. 
+
+##Soumalya's Comments: The scatterplots clearly show the relationships between age and the other variables. Your observation about height having a stronger correlation with age than weight is insightful. Great visual exploration! 
+
+## FOURTH EXERCISE
+### 4.1 Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# First, load the library needed
+library(car)
+
+# Second, define the function to generate plots
+generate_plots <- function(variable, var_name) {
+  par(mfrow = c(1, 2))  # Set up a 1x2 plot layout
+  
+  # Third, create a histogram
+  hist(variable, breaks = 20, probability = TRUE, 
+       main = paste("Histogram", var_name), 
+       xlab = var_name, ylab = "Density")
+  
+  #  Lastly, create a Q-Q plot using the car package
+  qqPlot(variable, main = paste("Q-Q Plot", var_name))
+}
+```
+
+Working with height:
+```{r echo=TRUE}
+generate_plots(survivors$weight, "Height")
+#My answer: The height histogram clearly shows a bell shape, which makes me think it follows a normal distribution. In my Q-Q plot, the points align and follow the straight line pattern. Therefore, I would say that height also follows a normal distribution.
+```
+
+Working with weight: 
+```{r echo=TRUE}
+generate_plots(survivors$height, "Weight")
+#My answer: There seems to be a slight right-skew in my weight histogram. I would say that this variable doesn’t follow a normal distribution. Similarly, I see the same thing in my Q-Q plot: the points don’t show a massive change, but they still deviate slightly from the straight line, leading me to conclude that weight is not normally distributed.
+```
+
+Working with age: 
+```{r echo=TRUE}
+generate_plots(survivors$age, "Age")
+#My answer: My age histogram shows a bell shape. The Q-Q plot points follow a straight line, which leads me to conclude that age has a normal distribution.
+```
+
+Working with zombies killed: 
+```{r echo=TRUE}
+generate_plots(survivors$zombies_killed, "Zombies Killed")
+#My answer: My zombies killed histogram is right-skewed, showing asymmetry, meaning it does not follow a normal distribution. Similarly, my Q-Q plot points do not follow the straight line, which indicates that the distribution is not normal.
+```
+
+Working with years of education:
+```{r echo=TRUE}
+generate_plots(survivors$years_of_education, "Years of Education")
+#My answer: My histogram shows a slight right-skew, but it’s mostly symmetrical. My Q-Q plot doesn’t show the points aligning with the straight line, so it’s not following a normal distribution.
+```
+
+##Soumalya's Comments: Excellent job using histograms and Q-Q plots to assess normality. The function makes it easy to repeat the process for multiple variables, and your written conclusions clearly state which variables are normally distributed and which aren’t.
+
+## FIFTH EXERCISE
+#Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal…
+
+dim(survivors)
+
+### 5.1 Samplying 30 zombie survivors (without replacement) from this population
+```{r echo=TRUE}
+set.seed(123)
+sampled_zombie_survivors <- survivors[sample(1:nrow(survivors), 30, replace = FALSE), ]
+```
+
+### 5.2 Calculate the mean and sample standard deviation for each variable. 
+```{r echo=TRUE}
+# Sample means:
+mean_height <- mean(sampled_zombie_survivors$height)
+mean_weight <- mean(sampled_zombie_survivors$weight)
+mean_age <- mean(sampled_zombie_survivors$age)
+mean_zombies_killed <- mean(sampled_zombie_survivors$zombies_killed)
+mean_education <- mean(sampled_zombie_survivors$years_of_education)
+
+# Sample SDs: 
+sd_height <- sd(sampled_zombie_survivors$height)
+sd_weight <- sd(sampled_zombie_survivors$weight)
+sd_age <- sd(sampled_zombie_survivors$age)
+sd_zombies_killed <- sd(sampled_zombie_survivors$zombies_killed)
+sd_education <- sd(sampled_zombie_survivors$years_of_education)
+```
+
+### 5.3 Calculating the sample size and estimating the standard error for each variable.
+```{r echo=TRUE}
+#Calculating the sample size
+sample_size <- nrow(sampled_zombie_survivors)
+
+#Estimate the standard error for each variable.
+se_height <- sd_height / sqrt(sample_size)
+se_weight <- sd_weight / sqrt(sample_size)
+se_age <- sd_age / sqrt(sample_size)
+se_zombies_killed <- sd_zombies_killed / sqrt(sample_size)
+se_education <- sd_education / sqrt(sample_size)
+
+```
+
+### 5.4 Construct 95% Confidence Intervals. 
+```{r echo=TRUE}
+# I have a normal variables on height and age, so the following distributions will be used: 
+
+  #Confidence interval for normal distribution (height and age)
+Confidence_interval_height <- c(mean_height - 1.96 * se_height, mean_height + 1.96 * se_height)
+Confidence_interval_age <- c(mean_age - 1.96 * se_age, mean_age + 1.96 * se_age)
+
+
+  #Confidence intervals for my non-normal variables
+t_value <- qt(0.975, df = sample_size - 1)
+
+  #Confidence intervals using t-distribution in my non-normal distribution (weight, zombies killed and years of education)
+
+Confidence_interval_weight <- c(mean_weight - t_value * se_weight, mean_weight + t_value * se_weight)
+
+Confidence_interval_zombies_killed <- c(mean_zombies_killed - t_value * se_zombies_killed, 
+                                        mean_zombies_killed + t_value * se_zombies_killed)
+
+Confidence_interval_education <- c(mean_education - t_value * se_education, 
+                                   mean_education + t_value * se_education)
+
+print(paste("95% Confidence Interval for Height: [", Confidence_interval_height[1], ",", Confidence_interval_height[2], "]"))
+print(paste("95% Confidence Interval for Weight: [", Confidence_interval_weight[1], ",", Confidence_interval_weight[2], "]"))
+print(paste("95% Confidence Interval for Age: [", Confidence_interval_age[1], ",", Confidence_interval_age[2], "]"))
+print(paste("95% Confidence Interval for Zombies Killed: [", Confidence_interval_zombies_killed[1], ",", Confidence_interval_zombies_killed[2], "]"))
+print(paste("95% Confidence Interval for Years of Education: [", Confidence_interval_education[1], ",", Confidence_interval_education[2], "]"))
+```
+
+##Soumalya's comment: Sampling is well-handled here! The code clearly demonstrates how to obtain sample statistics and confidence intervals for each variable. Your use of the t-distribution for non-normal variables is a nice touch.
+
+## SIXTH EXERCISE
+### 6.1 Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples. Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. 
+
+```{r echo=TRUE}
+
+#I will begin calculating my sampling Distributions
+set.seed(123)
+
+n_samples <- 100  # Number of samples I'll draw
+sample_size <- 30  # Sample size of 30
+
+#Now, I'll use the following function to calculate the means of variables from a random sample
+sample_means <- function(data, sample_size) {
+  sampled_data <- data[sample(1:nrow(data), sample_size, replace = FALSE), ]
+  
+#Returning the means of the variable 
+c(
+    mean_height = mean(sampled_data$height),
+    mean_weight = mean(sampled_data$weight),
+    mean_age = mean(sampled_data$age),
+    mean_zombies_killed = mean(sampled_data$zombies_killed),
+    mean_education = mean(sampled_data$years_of_education)
+  )
+}
+
+#Now, I'm replicating to repeat my sampling process 100 times
+samples_matrix <- replicate(n_samples, sample_means(survivors, sample_size))
+
+#Now, I'm converting the matrix into a data frame
+samples_df <- data.frame(t(samples_matrix))
+colnames(samples_df) <- c("mean_height", "mean_weight", "mean_age", "mean_zombies_killed", "mean_education")
+```
+
+```{r echo=TRUE}
+# Calculate mean and standard deviation for each variable's sampling distribution
+sampling_distribution_stats <- data.frame(
+  mean_height = mean(samples_df$mean_height),
+  sd_height = sd(samples_df$mean_height),
+  mean_weight = mean(samples_df$mean_weight),
+  sd_weight = sd(samples_df$mean_weight),
+  mean_age = mean(samples_df$mean_age),
+  sd_age = sd(samples_df$mean_age),
+  mean_zombies_killed = mean(samples_df$mean_zombies_killed),
+  sd_zombies_killed = sd(samples_df$mean_zombies_killed),
+  mean_education = mean(samples_df$mean_education),
+  sd_education = sd(samples_df$mean_education)
+)
+
+print(sampling_distribution_stats)
+```
+
+```{r echo=TRUE}
+#Here, I will be visualizing the Sampling Distribution for Mean Zombies Killed
+ggplot(samples_df, aes(x = mean_zombies_killed)) +
+  geom_histogram(bins = 15, fill = "steelblue", color = "white") +
+  labs(title = "Sampling Distribution of Mean Zombies Killed (n=30)")
+
+ggplot(samples_df, aes(sample = mean_zombies_killed)) +
+  stat_qq(color = "steelblue") +
+  stat_qq_line(color = "red") +
+  labs(title = "Q-Q Plot: Sampling Distribution of Mean Zombies Killed")
+```
+
+##Soumalya's Comments: Soumalya's comment: Awesome job constructing the sampling distribution! Replicating the sampling process 100 times and then visualizing the resulting distribution really solidifies the concept of sampling variability. The histograms and Q-Q plots add a nice visual confirmation.
+
+## CHALLENGES FACED: 
+1. One of the biggest challenges that I had here was on my second exercise, making my grid. I kept trying to use the patchwork package, and giving R the instruction of displaying a 3x2 grid. However, it became too complicated. I overcame this challenge after I learned about another package (gridExtra) that I could use, and that could follow my command without forcing me to create another empty plot. After noticing that this package was easier to manage for my data, I switched and it all worked!
+
+2. I kept making a lot of typos, and that made my homework even longer than expected. I am considering using less text/words for the names I assign to certain factors/variables because sometimes those can turn out too long, and make everything even more confusing and harder to keep track. 
+
+3. For some reason, in this homework I kept getting an error saying that I didn't have my CRAN mirror in R/my project? It was very weird and although I understand what its purpose is a little more, I never got to figure out why I suddently started having that problem. I did some research and found out that I needed to display it in my project (choosing the URL that works in the US), and that solved it all. 
+
+4. It was also hard to knitt my project using the theme that Prof. Schmitt mentioned in the homework instructions. I took at least 2 more hours for that (when I usually take no more than 15 min), and then after a lot of research and trial/error, I found out that sometimes such themes only work on older R versions. Therefore, that in order to have it activate in my laptop, I needed to "degrade" my R Studio version. However, it was not 100% guaranteed that my problem was going to be solved. I chose to use another theme considering this situation. 
+
+5. In exercise 4, when doing the Q-Q Plot, I had a lot of issues too because my package wasn't running properly. I found out that I was running the function qqplot, instead of the one that I HAD to use with the (car) package: qqPlot. 
+I also kept forgetting to run the "library(car)" package first , which lead me to (again), spend a huge amount of time trying to figure out what to do to fix it. 
+
+## Soumalya's Comments: Overall, the code is clear and does a great job of addressing each exercise. One suggestion for improvement is to modularize the code even further by creating functions for repeated tasks (like calculating descriptive statistics or generating plots), which would make the code more reusable and concise. For example, in Exercises 1.1 and 1.2, instead of calculating the mean and standard deviation for each variable separately, you could define a helper function that computes both and then apply it to each variable.Here's a refined code snippet that improves upon the code in Exercises 1.1 and 1.2:
+
+```{r}
+#Original code snippet from Exercises 1.1 and 1.2:
+   height_mean <- mean(survivors$height)
+   weight_mean <- mean(survivors$weight)
+   ...
+   height_sd_population <- sqrt(sum((survivors$height - height_mean)^2) / length(survivors$height))
+   weight_sd_population <- sqrt(sum((survivors$weight - weight_mean)^2) / length(survivors$weight))
+```
+
+
+## Improved, modularized version:
+```{r}
+calculate_stats <- function(x) {
+  list(
+    mean = mean(x),
+    sd = sd(x)  # Using built-in function 'sd' for clarity and simplicity
+  )
+}
+
+# Now, you can easily apply this function to any variable:
+height_stats <- calculate_stats(survivors$height)
+weight_stats <- calculate_stats(survivors$weight)
+age_stats <- calculate_stats(survivors$age)
+zombies_killed_stats <- calculate_stats(survivors$zombies_killed)
+education_stats <- calculate_stats(survivors$years_of_education)
+
+# And then print them, for example:
+print(paste("Height - Mean:", height_stats$mean, "SD:", height_stats$sd))
+print(paste("Weight - Mean:", weight_stats$mean, "SD:", weight_stats$sd))
+```
+
+## Additionally, consider adding some error handling for file paths and data loading to avoid issues when sharing the project. Great work and keep up the awesome coding!
